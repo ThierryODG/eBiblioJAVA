@@ -4,18 +4,42 @@
  */
 package ebiblio;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.Statement;
+
 /**
  *
  * @author THIERRY
  */
 public class formemain extends javax.swing.JFrame {
+    public static Connection con,cone;
+    public static PreparedStatement ps,pse;
+    public static Statement st,ste;
+    public static ResultSet rs,rse;
+    int varticle= 0,vcommande= 0,vvente=0 ;
 
     /**
      * Creates new form formemain
      */
     public formemain() {
         initComponents();
+        TableLivres();
     }
+    
+    public void TableLivres()
+    {
+        try{
+            con = connexion.seConnecter();
+            st = con.createStatement();
+            DatabaseMetaData dbm = con.getMetaData();
+            rs = dbm.getTables(null,null,"livres",null);
+            if(!rs.next()){
+                st.executeUpdate("CREATE TABLE livres")
+            }
+        }
+    } 
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -27,16 +51,16 @@ public class formemain extends javax.swing.JFrame {
     private void initComponents() {
 
         jPanel1 = new javax.swing.JPanel();
-        jLabel1 = new javax.swing.JLabel();
-        jLabel2 = new javax.swing.JLabel();
+        memprunts = new javax.swing.JLabel();
+        mlivres = new javax.swing.JLabel();
         jSeparator1 = new javax.swing.JSeparator();
-        jLabel3 = new javax.swing.JLabel();
-        jLabel4 = new javax.swing.JLabel();
+        madherents = new javax.swing.JLabel();
+        mstatistique = new javax.swing.JLabel();
         jSeparator2 = new javax.swing.JSeparator();
         jSeparator3 = new javax.swing.JSeparator();
         jButton1 = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
-        jDesktopPane1 = new javax.swing.JDesktopPane();
+        panemain = new javax.swing.JDesktopPane();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         jMenu2 = new javax.swing.JMenu();
@@ -45,28 +69,28 @@ public class formemain extends javax.swing.JFrame {
 
         jPanel1.setBackground(new java.awt.Color(204, 51, 0));
 
-        jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
-        jLabel1.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/image/icons8-knowledge-sharing-50.png"))); // NOI18N
-        jLabel1.setText(" EMPRUNS");
+        memprunts.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
+        memprunts.setForeground(new java.awt.Color(255, 255, 255));
+        memprunts.setIcon(new javax.swing.ImageIcon(getClass().getResource("/image/icons8-knowledge-sharing-50.png"))); // NOI18N
+        memprunts.setText(" EMPRUNTS");
 
-        jLabel2.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
-        jLabel2.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/image/icons8-book-stack-50.png"))); // NOI18N
-        jLabel2.setText(" LIVRES");
+        mlivres.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
+        mlivres.setForeground(new java.awt.Color(255, 255, 255));
+        mlivres.setIcon(new javax.swing.ImageIcon(getClass().getResource("/image/icons8-book-stack-50.png"))); // NOI18N
+        mlivres.setText(" LIVRES");
 
         jSeparator1.setBackground(new java.awt.Color(255, 255, 255));
         jSeparator1.setForeground(new java.awt.Color(255, 255, 255));
 
-        jLabel3.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
-        jLabel3.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/image/people-50.png"))); // NOI18N
-        jLabel3.setText(" ADHERENTS");
+        madherents.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
+        madherents.setForeground(new java.awt.Color(255, 255, 255));
+        madherents.setIcon(new javax.swing.ImageIcon(getClass().getResource("/image/people-50.png"))); // NOI18N
+        madherents.setText(" ADHERENTS");
 
-        jLabel4.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
-        jLabel4.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel4.setIcon(new javax.swing.ImageIcon(getClass().getResource("/image/icons8-circle-chart-50.png"))); // NOI18N
-        jLabel4.setText(" STATISTIQUE");
+        mstatistique.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
+        mstatistique.setForeground(new java.awt.Color(255, 255, 255));
+        mstatistique.setIcon(new javax.swing.ImageIcon(getClass().getResource("/image/icons8-circle-chart-50.png"))); // NOI18N
+        mstatistique.setText(" STATISTIQUE");
 
         jSeparator2.setBackground(new java.awt.Color(255, 255, 255));
         jSeparator2.setForeground(new java.awt.Color(255, 255, 255));
@@ -96,14 +120,14 @@ public class formemain extends javax.swing.JFrame {
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jLabel3)
+                .addComponent(madherents)
                 .addGap(18, 18, 18))
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGap(6, 6, 6)
-                        .addComponent(jLabel4)
+                        .addComponent(mstatistique)
                         .addContainerGap(17, Short.MAX_VALUE))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -115,7 +139,7 @@ public class formemain extends javax.swing.JFrame {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGap(23, 23, 23)
-                        .addComponent(jLabel1))
+                        .addComponent(memprunts))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGap(20, 20, 20)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -123,26 +147,26 @@ public class formemain extends javax.swing.JFrame {
                             .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 195, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGap(29, 29, 29)
-                        .addComponent(jLabel2)))
+                        .addComponent(mlivres)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGap(105, 105, 105)
-                .addComponent(jLabel2)
+                .addComponent(mlivres)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 14, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel1)
+                .addComponent(memprunts)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, 14, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel3)
+                .addComponent(madherents)
                 .addGap(18, 18, 18)
                 .addComponent(jSeparator3, javax.swing.GroupLayout.PREFERRED_SIZE, 14, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel4)
+                .addComponent(mstatistique)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jButton1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -150,16 +174,16 @@ public class formemain extends javax.swing.JFrame {
                 .addGap(33, 33, 33))
         );
 
-        jDesktopPane1.setBackground(new java.awt.Color(255, 255, 255));
+        panemain.setBackground(new java.awt.Color(255, 255, 255));
 
-        javax.swing.GroupLayout jDesktopPane1Layout = new javax.swing.GroupLayout(jDesktopPane1);
-        jDesktopPane1.setLayout(jDesktopPane1Layout);
-        jDesktopPane1Layout.setHorizontalGroup(
-            jDesktopPane1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        javax.swing.GroupLayout panemainLayout = new javax.swing.GroupLayout(panemain);
+        panemain.setLayout(panemainLayout);
+        panemainLayout.setHorizontalGroup(
+            panemainLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGap(0, 1112, Short.MAX_VALUE)
         );
-        jDesktopPane1Layout.setVerticalGroup(
-            jDesktopPane1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        panemainLayout.setVerticalGroup(
+            panemainLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGap(0, 670, Short.MAX_VALUE)
         );
 
@@ -178,13 +202,13 @@ public class formemain extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jDesktopPane1))
+                .addComponent(panemain))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jPanel1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(layout.createSequentialGroup()
-                .addComponent(jDesktopPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(panemain, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, Short.MAX_VALUE))
         );
 
@@ -237,11 +261,6 @@ public class formemain extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
-    private javax.swing.JDesktopPane jDesktopPane1;
-    private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel4;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenuBar jMenuBar1;
@@ -249,5 +268,10 @@ public class formemain extends javax.swing.JFrame {
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JSeparator jSeparator2;
     private javax.swing.JSeparator jSeparator3;
+    private javax.swing.JLabel madherents;
+    private javax.swing.JLabel memprunts;
+    private javax.swing.JLabel mlivres;
+    private javax.swing.JLabel mstatistique;
+    private javax.swing.JDesktopPane panemain;
     // End of variables declaration//GEN-END:variables
 }
