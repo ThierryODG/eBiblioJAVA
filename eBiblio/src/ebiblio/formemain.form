@@ -153,6 +153,9 @@
             </Property>
             <Property name="text" type="java.lang.String" value=" EMPRUNTS"/>
           </Properties>
+          <Events>
+            <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="mempruntsMouseClicked"/>
+          </Events>
         </Component>
         <Component class="javax.swing.JLabel" name="mlivres">
           <Properties>
@@ -167,6 +170,9 @@
             </Property>
             <Property name="text" type="java.lang.String" value=" LIVRES"/>
           </Properties>
+          <Events>
+            <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="mlivresMouseClicked"/>
+          </Events>
         </Component>
         <Component class="javax.swing.JSeparator" name="jSeparator1">
           <Properties>
@@ -191,6 +197,9 @@
             </Property>
             <Property name="text" type="java.lang.String" value=" ADHERENTS"/>
           </Properties>
+          <Events>
+            <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="madherentsMouseClicked"/>
+          </Events>
         </Component>
         <Component class="javax.swing.JLabel" name="mstatistique">
           <Properties>
@@ -205,6 +214,9 @@
             </Property>
             <Property name="text" type="java.lang.String" value=" STATISTIQUE"/>
           </Properties>
+          <Events>
+            <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="mstatistiqueMouseClicked"/>
+          </Events>
         </Component>
         <Component class="javax.swing.JSeparator" name="jSeparator2">
           <Properties>

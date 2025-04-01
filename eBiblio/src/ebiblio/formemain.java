@@ -18,6 +18,7 @@ public class formemain extends javax.swing.JFrame {
     public static PreparedStatement ps,pse;
     public static Statement st,ste;
     public static ResultSet rs,rse;
+    int vlivre = 0, vemprunt= 0, vadherent= 0, vstatistique= 0;
 
     /**
      * Creates new form formemain
@@ -61,11 +62,21 @@ public class formemain extends javax.swing.JFrame {
         memprunts.setForeground(new java.awt.Color(255, 255, 255));
         memprunts.setIcon(new javax.swing.ImageIcon(getClass().getResource("/image/icons8-knowledge-sharing-50.png"))); // NOI18N
         memprunts.setText(" EMPRUNTS");
+        memprunts.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                mempruntsMouseClicked(evt);
+            }
+        });
 
         mlivres.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
         mlivres.setForeground(new java.awt.Color(255, 255, 255));
         mlivres.setIcon(new javax.swing.ImageIcon(getClass().getResource("/image/icons8-book-stack-50.png"))); // NOI18N
         mlivres.setText(" LIVRES");
+        mlivres.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                mlivresMouseClicked(evt);
+            }
+        });
 
         jSeparator1.setBackground(new java.awt.Color(255, 255, 255));
         jSeparator1.setForeground(new java.awt.Color(255, 255, 255));
@@ -74,11 +85,21 @@ public class formemain extends javax.swing.JFrame {
         madherents.setForeground(new java.awt.Color(255, 255, 255));
         madherents.setIcon(new javax.swing.ImageIcon(getClass().getResource("/image/people-50.png"))); // NOI18N
         madherents.setText(" ADHERENTS");
+        madherents.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                madherentsMouseClicked(evt);
+            }
+        });
 
         mstatistique.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
         mstatistique.setForeground(new java.awt.Color(255, 255, 255));
         mstatistique.setIcon(new javax.swing.ImageIcon(getClass().getResource("/image/icons8-circle-chart-50.png"))); // NOI18N
         mstatistique.setText(" STATISTIQUE");
+        mstatistique.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                mstatistiqueMouseClicked(evt);
+            }
+        });
 
         jSeparator2.setBackground(new java.awt.Color(255, 255, 255));
         jSeparator2.setForeground(new java.awt.Color(255, 255, 255));
@@ -210,6 +231,48 @@ public class formemain extends javax.swing.JFrame {
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_jButton2ActionPerformed
+
+    private void mlivresMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_mlivresMouseClicked
+        // TODO add your handling code here:
+        if(vlivre == 0){
+            formlivre fl = new formlivre();
+            fl.setVisible(true);
+            panemain.add(fl);
+            fl.setLocation(40, 50);
+            fl.moveToFront();
+            vlivre=1;
+            vemprunt= 0;
+            vadherent= 0;
+            vstatistique= 0;
+        }
+    }//GEN-LAST:event_mlivresMouseClicked
+
+    private void mempruntsMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_mempruntsMouseClicked
+        // TODO add your handling code here:
+        formemprunt fe = new formemprunt();
+        fe.setVisible(true);
+        panemain.add(fe);
+        fe.setLocation(40,50);
+        fe.moveToFront();
+    }//GEN-LAST:event_mempruntsMouseClicked
+
+    private void madherentsMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_madherentsMouseClicked
+        // TODO add your handling code here:
+        formadherent fa = new formadherent();
+        fa.setVisible(true);
+        panemain.add(fa);
+        fa.setLocation(40,50);
+        fa.moveToFront();
+    }//GEN-LAST:event_madherentsMouseClicked
+
+    private void mstatistiqueMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_mstatistiqueMouseClicked
+        // TODO add your handling code here:
+        formstatistique  fs = new formstatistique();
+        fs.setVisible(true);
+        panemain.add(fs);
+        fs.setLocation(40,50);
+        fs.moveToFront();
+    }//GEN-LAST:event_mstatistiqueMouseClicked
 
     /**
      * @param args the command line arguments
