@@ -18,28 +18,16 @@ public class formemain extends javax.swing.JFrame {
     public static PreparedStatement ps,pse;
     public static Statement st,ste;
     public static ResultSet rs,rse;
-    int varticle= 0,vcommande= 0,vvente=0 ;
 
     /**
      * Creates new form formemain
      */
     public formemain() {
         initComponents();
-        TableLivres();
+ 
     }
     
-    public void TableLivres()
-    {
-        try{
-            con = connexion.seConnecter();
-            st = con.createStatement();
-            DatabaseMetaData dbm = con.getMetaData();
-            rs = dbm.getTables(null,null,"livres",null);
-            if(!rs.next()){
-                st.executeUpdate("CREATE TABLE livres")
-            }
-        }
-    } 
+  
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -251,10 +239,8 @@ public class formemain extends javax.swing.JFrame {
         //</editor-fold>
 
         /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new formemain().setVisible(true);
-            }
+        java.awt.EventQueue.invokeLater(() -> {
+            new formemain().setVisible(true);
         });
     }
 
