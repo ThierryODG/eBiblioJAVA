@@ -5,9 +5,13 @@
 package ebiblio;
 import connexionbd.*;
 import static ebiblio.formemain.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
 
 /**
  *
@@ -20,7 +24,62 @@ public class formlivre extends javax.swing.JInternalFrame {
      */
     public formlivre() {
         initComponents();
+        // Initialisation du modèle de tableau
+    initTableModel();
+    
+    // Chargement des données au démarrage
+    chargerDonneesLivres();
     }
+    
+    
+    
+    
+    private void initTableModel() {
+    // Création du modèle avec les colonnes correspondant à votre BDD
+    DefaultTableModel model = new DefaultTableModel(
+        new Object[]{"ID", "Titre", "Auteur", "Type", "ISBN", "Ex. totaux", "Ex. dispo"}, 0) {
+        @Override
+        public boolean isCellEditable(int row, int column) {
+            return false; // Rend toutes les cellules non éditables
+        }
+    };
+    tabLivre.setModel(model);
+    
+    // Configuration de la largeur des colonnes
+    tabLivre.getColumnModel().getColumn(0).setPreferredWidth(50);  // ID
+    tabLivre.getColumnModel().getColumn(1).setPreferredWidth(200); // Titre
+    tabLivre.getColumnModel().getColumn(2).setPreferredWidth(150); // Auteur
+    // ... autres configurations
+}
+
+private void chargerDonneesLivres() {
+    DefaultTableModel model = (DefaultTableModel) tabLivre.getModel();
+    model.setRowCount(0); // Vide le tableau avant rechargement
+
+    try (Connection con = connexionbd.seConnecter();
+         Statement st = con.createStatement();
+         ResultSet rs = st.executeQuery("SELECT * FROM livres ORDER BY titre")) {
+        
+        while (rs.next()) {
+            model.addRow(new Object[]{
+                rs.getInt("id"),
+                rs.getString("titre"),
+                rs.getString("auteur"),
+                rs.getString("type"),
+                rs.getString("isbn"),
+                rs.getInt("exemplaires_totaux"),
+                rs.getInt("exemplaires_disponibles")
+            });
+        }
+    } catch (Exception e) {
+        JOptionPane.showMessageDialog(this,
+            "Erreur lors du chargement des livres: " + e.getMessage(),
+            "Erreur",
+            JOptionPane.ERROR_MESSAGE);
+    }
+}
+    
+    
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -287,8 +346,93 @@ public class formlivre extends javax.swing.JInternalFrame {
 
     private void btnSupprimerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSupprimerActionPerformed
         // TODO add your handling code here:
+         // 1. Vérifier qu'une ligne est sélectionnée dans le tableau
+    int selectedRow = tabLivre.getSelectedRow();
+    if (selectedRow == -1) {
+        JOptionPane.showMessageDialog(this,
+            "Veuillez sélectionner un livre à supprimer",
+            "Aucune sélection",
+            JOptionPane.WARNING_MESSAGE);
+        return;
+    }
+
+    // 2. Récupérer l'ID du livre sélectionné
+    int livreId = (int) tabLivre.getValueAt(selectedRow, 0); // ID dans la 1ère colonne
+
+    // 3. Confirmation de suppression
+    int confirm = JOptionPane.showConfirmDialog(this,
+        "Êtes-vous sûr de vouloir supprimer ce livre ?\nCette action est irréversible.",
+        "Confirmation de suppression",
+        JOptionPane.YES_NO_OPTION);
+
+    if (confirm != JOptionPane.YES_OPTION) {
+        return;
+    }
+
+    Connection con = null;
+    PreparedStatement ps = null;
+
+    try {
+        // 4. Connexion à la BDD
+        con = connexionbd.seConnecter();
+
+        // 5. Vérifier si le livre est emprunté
+        String checkEmprunt = "SELECT id FROM emprunts WHERE livre_id = ? AND statut = 'En cours'";
+        ps = con.prepareStatement(checkEmprunt);
+        ps.setInt(1, livreId);
+        ResultSet rs = ps.executeQuery();
+
+        if (rs.next()) {
+            JOptionPane.showMessageDialog(this,
+                "Impossible de supprimer : ce livre est actuellement emprunté",
+                "Suppression bloquée",
+                JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        // 6. Suppression dans statistiquelivre (contrainte de clé étrangère)
+        String deleteStats = "DELETE FROM statistiquelivre WHERE livre_id = ?";
+        ps = con.prepareStatement(deleteStats);
+        ps.setInt(1, livreId);
+        ps.executeUpdate();
+
+        // 7. Suppression du livre
+        String deleteLivre = "DELETE FROM livres WHERE id = ?";
+        ps = con.prepareStatement(deleteLivre);
+        ps.setInt(1, livreId);
+        int rowsDeleted = ps.executeUpdate();
+
+        if (rowsDeleted > 0) {
+            JOptionPane.showMessageDialog(this,
+                "Livre supprimé avec succès",
+                "Succès",
+                JOptionPane.INFORMATION_MESSAGE);
+            
+            // 8. Actualiser le tableau
+            chargerDonneesLivres();
+        }
+
+    } catch (SQLException e) {
+        JOptionPane.showMessageDialog(this,
+            "Erreur SQL lors de la suppression : " + e.getMessage(),
+            "Erreur",
+            JOptionPane.ERROR_MESSAGE);
+    } catch (ClassNotFoundException e) {
+        JOptionPane.showMessageDialog(this,
+            "Erreur de connexion à la base de données",
+            "Erreur",
+            JOptionPane.ERROR_MESSAGE);
+    } finally {
+        // 9. Fermeture des ressources
+        try {
+            if (ps != null) ps.close();
+            if (con != null) con.close();
+        } catch (SQLException e) {
+        }
+    }
     }//GEN-LAST:event_btnSupprimerActionPerformed
 
+    
     private void btnModifierActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnModifierActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_btnModifierActionPerformed
@@ -338,6 +482,7 @@ public class formlivre extends javax.swing.JInternalFrame {
         cbType.setSelectedIndex(0);
         txtISBN.setText("");
         txtExemple.setText("");
+        chargerDonneesLivres();
         
     } catch (SQLException e) {
         JOptionPane.showMessageDialog(this, "Erreur SQL: " + e.getMessage());
