@@ -48,12 +48,11 @@ public class formlivre extends javax.swing.JInternalFrame {
         jLabel6 = new javax.swing.JLabel();
         txtTitre = new javax.swing.JTextField();
         txtISBN = new javax.swing.JTextField();
-        txtType = new javax.swing.JTextField();
         txtExemple = new javax.swing.JTextField();
         txtRecherher = new javax.swing.JTextField();
         jLabel7 = new javax.swing.JLabel();
         jLabel8 = new javax.swing.JLabel();
-        jComboBox1 = new javax.swing.JComboBox<>();
+        cbType = new javax.swing.JComboBox<>();
 
         setBackground(new java.awt.Color(255, 255, 255));
         setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
@@ -141,6 +140,12 @@ public class formlivre extends javax.swing.JInternalFrame {
         jLabel6.setFont(new java.awt.Font("Segoe UI", 0, 20)); // NOI18N
         jLabel6.setText("Exemple");
 
+        txtExemple.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                txtExempleKeyReleased(evt);
+            }
+        });
+
         jLabel7.setFont(new java.awt.Font("Segoe UI", 0, 20)); // NOI18N
         jLabel7.setIcon(new javax.swing.ImageIcon(getClass().getResource("/image/rechercher_32.png"))); // NOI18N
         jLabel7.setText("rechercher");
@@ -148,7 +153,13 @@ public class formlivre extends javax.swing.JInternalFrame {
         jLabel8.setFont(new java.awt.Font("Segoe UI", 0, 36)); // NOI18N
         jLabel8.setIcon(new javax.swing.ImageIcon(getClass().getResource("/image/fond_bibliothèque.jpg"))); // NOI18N
 
-        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Scientifique", "Littéraire" }));
+        cbType.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        cbType.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Scientifique", "Littéraire" }));
+        cbType.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cbTypeActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -164,19 +175,18 @@ public class formlivre extends javax.swing.JInternalFrame {
                     .addComponent(jLabel5)
                     .addComponent(btnSupprimer))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                .addComponent(txtExemple, javax.swing.GroupLayout.Alignment.LEADING)
-                                .addComponent(txtISBN, javax.swing.GroupLayout.Alignment.LEADING)
-                                .addComponent(txtType, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 344, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(txtExemple, javax.swing.GroupLayout.DEFAULT_SIZE, 344, Short.MAX_VALUE)
+                            .addComponent(txtISBN)
                             .addGroup(jPanel2Layout.createSequentialGroup()
                                 .addComponent(btnEnregistrer)
                                 .addGap(49, 49, 49)
                                 .addComponent(btnModifier)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(btnAnnuler)))
+                                .addComponent(btnAnnuler))
+                            .addComponent(cbType, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel2Layout.createSequentialGroup()
                                 .addGap(100, 100, 100)
@@ -191,8 +201,6 @@ public class formlivre extends javax.swing.JInternalFrame {
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                             .addComponent(txtAuteur, javax.swing.GroupLayout.PREFERRED_SIZE, 466, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(txtTitre, javax.swing.GroupLayout.PREFERRED_SIZE, 466, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 235, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(25, 25, 25)))
                 .addContainerGap(47, Short.MAX_VALUE))
             .addGroup(jPanel2Layout.createSequentialGroup()
@@ -202,14 +210,10 @@ public class formlivre extends javax.swing.JInternalFrame {
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGap(3, 3, 3)
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel2)
-                            .addComponent(txtTitre, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addComponent(jComboBox1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(9, 9, 9)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel2)
+                    .addComponent(txtTitre, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(19, 19, 19)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(txtAuteur, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -219,8 +223,8 @@ public class formlivre extends javax.swing.JInternalFrame {
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel4)
-                            .addComponent(txtType, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(18, 18, 18)
+                            .addComponent(cbType, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(15, 15, 15)
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel5)
                             .addComponent(txtISBN, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -294,8 +298,8 @@ public class formlivre extends javax.swing.JInternalFrame {
         // Récupération des valeurs
     String titre = txtTitre.getText().trim();
     String auteur = txtAuteur.getText().trim();
-    String type = txtType.getText().trim();
     String isbn = txtISBN.getText().trim();
+    String type = (String) cbType.getSelectedItem();
     String exemplaires = txtExemple.getText().trim();
 
     // Validation basique
@@ -331,7 +335,7 @@ public class formlivre extends javax.swing.JInternalFrame {
         // Rafraîchissement
         txtTitre.setText("");
         txtAuteur.setText("");
-        txtType.setText("");
+        cbType.setSelectedIndex(0);
         txtISBN.setText("");
         txtExemple.setText("");
         
@@ -353,13 +357,51 @@ public class formlivre extends javax.swing.JInternalFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_txtAuteurActionPerformed
 
+    private void cbTypeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbTypeActionPerformed
+        // TODO add your handling code here:
+        cbType.setSelectedIndex(0); //
+    }//GEN-LAST:event_cbTypeActionPerformed
+
+    private void txtExempleKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtExempleKeyReleased
+        // TODO add your handling code here: // 1. Récupération et validation
+    String texte = txtExemple.getText().trim();
+    
+    try {
+        // 2. Conversion en nombre
+        int exemplaires = Integer.parseInt(texte);
+        
+        // 3. Validation du nombre positif
+        if (exemplaires <= 0) {
+            JOptionPane.showMessageDialog(this,
+                "Le nombre d'exemplaires doit être > 0",
+                "Erreur de saisie",
+                JOptionPane.WARNING_MESSAGE);
+            txtExemple.setText(""); // Réinitialisation
+            txtExemple.requestFocus(); // Retour au champ
+            return;
+        }
+        
+        // 4. Autofocus sur le bouton Enregistrer si valide
+        //btnEnregistrer.requestFocus();
+        
+    } catch (NumberFormatException e) {
+        // 5. Gestion des erreurs de format
+        JOptionPane.showMessageDialog(this,
+            "Veuillez entrer un nombre valide",
+            "Erreur de format",
+            JOptionPane.ERROR_MESSAGE);
+        txtExemple.setText("");
+        txtExemple.requestFocus();
+    }
+    }//GEN-LAST:event_txtExempleKeyReleased
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAnnuler;
     private javax.swing.JButton btnEnregistrer;
     private javax.swing.JButton btnModifier;
     private javax.swing.JButton btnSupprimer;
-    private javax.swing.JComboBox<String> jComboBox1;
+    private javax.swing.JComboBox<String> cbType;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
@@ -377,6 +419,5 @@ public class formlivre extends javax.swing.JInternalFrame {
     private javax.swing.JTextField txtISBN;
     private javax.swing.JTextField txtRecherher;
     private javax.swing.JTextField txtTitre;
-    private javax.swing.JTextField txtType;
     // End of variables declaration//GEN-END:variables
 }

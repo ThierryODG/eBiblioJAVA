@@ -4,12 +4,15 @@
  */
 package ebiblio;
 
+import connexionbd.connexionbd;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.function.Supplier;
 import javax.swing.JInternalFrame;
+import javax.swing.JOptionPane;
 
 
 /**
@@ -27,8 +30,45 @@ public class formemain extends javax.swing.JFrame {
      */
     public formemain() {
         initComponents();
- 
+        
+        // Test de connexion à la BDD au lancement
+    if (!testerConnexionBDD()) {
+        JOptionPane.showMessageDialog(this, 
+            "L'application va se fermer car la connexion à la base de données a échoué",
+            "Erreur Critique", 
+            JOptionPane.ERROR_MESSAGE);
+        System.exit(1); // Fermeture de l'application si échec
+    } else {
+        // Initialisation normale si connexion réussie
+        //TableLivres();
     }
+        
+    }
+    
+    // Méthode de test de connexion (à mettre dans votre formmain.java)
+private boolean testerConnexionBDD() {
+    try {
+        Connection testCon = connexionbd.seConnecter();
+        if (testCon != null) {
+            testCon.close();
+            return true;
+        }
+    } catch (ClassNotFoundException | SQLException e) {
+        String errorMsg = "Erreur de connexion à la BDD:\n"
+                        + "Détails techniques:\n"
+                        + e.getMessage() + "\n\n"
+                        + "Vérifiez que:\n"
+                        + "1. XAMPP est lancé avec MySQL\n"
+                        + "2. La base 'ebibliodb' existe\n"
+                        + "3. Les paramètres de connexion sont corrects";
+        
+        JOptionPane.showMessageDialog(this, 
+            errorMsg,
+            "Erreur Connexion", 
+            JOptionPane.ERROR_MESSAGE);
+    }
+    return false;
+}
     
   
 
