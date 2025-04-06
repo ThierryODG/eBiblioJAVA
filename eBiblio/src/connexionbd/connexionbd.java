@@ -17,7 +17,7 @@ public class connexionbd {
     public static Connection seConnecter() throws ClassNotFoundException, SQLException
     {
         Class.forName("com.mysql.jdbc.Driver");
-        con = DriverManager.getConnection("jdbc:mysql://localhost:3306/ebibliobd","root","");
+        con = DriverManager.getConnection("jdbc:mysql://localhost:3306/ebibliodb","root","");
         return con;
     }
     
