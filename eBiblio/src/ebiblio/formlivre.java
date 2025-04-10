@@ -109,9 +109,9 @@ private void chargerDonneesLivres() {
         txtISBN = new javax.swing.JTextField();
         txtExemple = new javax.swing.JTextField();
         txtRecherher = new javax.swing.JTextField();
-        jLabel7 = new javax.swing.JLabel();
         jLabel8 = new javax.swing.JLabel();
         cbType = new javax.swing.JComboBox<>();
+        btnrechercher = new javax.swing.JButton();
 
         setBackground(new java.awt.Color(255, 255, 255));
         setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
@@ -205,10 +205,6 @@ private void chargerDonneesLivres() {
             }
         });
 
-        jLabel7.setFont(new java.awt.Font("Segoe UI", 0, 20)); // NOI18N
-        jLabel7.setIcon(new javax.swing.ImageIcon(getClass().getResource("/image/rechercher_32.png"))); // NOI18N
-        jLabel7.setText("rechercher");
-
         jLabel8.setFont(new java.awt.Font("Segoe UI", 0, 36)); // NOI18N
         jLabel8.setIcon(new javax.swing.ImageIcon(getClass().getResource("/image/fond_bibliothèque.jpg"))); // NOI18N
 
@@ -217,6 +213,14 @@ private void chargerDonneesLivres() {
         cbType.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 cbTypeActionPerformed(evt);
+            }
+        });
+
+        btnrechercher.setIcon(new javax.swing.ImageIcon(getClass().getResource("/image/rechercher_32.png"))); // NOI18N
+        btnrechercher.setText("rechercher");
+        btnrechercher.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnrechercherActionPerformed(evt);
             }
         });
 
@@ -249,19 +253,16 @@ private void chargerDonneesLivres() {
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel2Layout.createSequentialGroup()
                                 .addGap(100, 100, 100)
-                                .addComponent(txtRecherher, javax.swing.GroupLayout.PREFERRED_SIZE, 316, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(jLabel7))
+                                .addComponent(txtRecherher, javax.swing.GroupLayout.PREFERRED_SIZE, 316, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jLabel8)
-                                .addGap(73, 73, 73))))
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                            .addComponent(txtAuteur, javax.swing.GroupLayout.PREFERRED_SIZE, 466, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(txtTitre, javax.swing.GroupLayout.PREFERRED_SIZE, 466, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(25, 25, 25)))
-                .addContainerGap(47, Short.MAX_VALUE))
+                                .addComponent(jLabel8)))
+                        .addGap(32, 32, 32)
+                        .addComponent(btnrechercher))
+                    .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                        .addComponent(txtAuteur, javax.swing.GroupLayout.PREFERRED_SIZE, 466, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(txtTitre, javax.swing.GroupLayout.PREFERRED_SIZE, 466, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(68, Short.MAX_VALUE))
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addComponent(jScrollPane2)
                 .addContainerGap())
@@ -295,7 +296,7 @@ private void chargerDonneesLivres() {
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                 .addComponent(txtRecherher, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(jLabel7))
+                                .addComponent(btnrechercher))
                             .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                 .addComponent(btnSupprimer)
                                 .addComponent(btnEnregistrer)
@@ -540,12 +541,83 @@ private void chargerDonneesLivres() {
     }
     }//GEN-LAST:event_txtExempleKeyReleased
 
+    private void btnrechercherActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnrechercherActionPerformed
+        // TODO add your handling code here:                                            
+    String termeRecherche = txtRecherher.getText().trim();
+    
+    if (termeRecherche.isEmpty()) {
+        // Si le champ est vide, recharger tous les livres
+        chargerDonneesLivres();
+        return;
+    }
+    
+    try {
+        // Utilisation de votre modèle de table existant
+        DefaultTableModel model = (DefaultTableModel) tabLivre.getModel();
+        model.setRowCount(0); // Vide le tableau
+        
+        // Connexion avec votre méthode existante
+        Connection con = connexionbd.seConnecter();
+        
+        // Requête avec LIKE pour recherche partielle
+        String sql = "SELECT * FROM livres WHERE " +
+                     "titre LIKE ? OR " +
+                     "auteur LIKE ? OR " +
+                     "isbn LIKE ? OR " +
+                     "type LIKE ? " +
+                     "ORDER BY titre";
+        
+        PreparedStatement ps = con.prepareStatement(sql);
+        String termeLike = "%" + termeRecherche + "%";
+        ps.setString(1, termeLike);
+        ps.setString(2, termeLike);
+        ps.setString(3, termeLike);
+        ps.setString(4, termeLike);
+        
+        ResultSet rs = ps.executeQuery();
+        
+        // Remplissage du tableau comme dans votre méthode chargerDonneesLivres()
+        while (rs.next()) {
+            model.addRow(new Object[]{
+                rs.getInt("id"),
+                rs.getString("titre"),
+                rs.getString("auteur"),
+                rs.getString("type"),
+                rs.getString("isbn"),
+                rs.getInt("exemplaires_totaux"),
+                rs.getInt("exemplaires_disponibles")
+            });
+        }
+        
+        // Feedback si aucun résultat
+        if (model.getRowCount() == 0) {
+            JOptionPane.showMessageDialog(this,
+                "Aucun livre trouvé pour : " + termeRecherche,
+                "Aucun résultat",
+                JOptionPane.INFORMATION_MESSAGE);
+        }
+        
+        // Fermeture des ressources
+        rs.close();
+        ps.close();
+        con.close();
+        
+    } catch (SQLException | ClassNotFoundException e) {
+        JOptionPane.showMessageDialog(this,
+            "Erreur lors de la recherche : " + e.getMessage(),
+            "Erreur",
+            JOptionPane.ERROR_MESSAGE);
+    }
+
+    }//GEN-LAST:event_btnrechercherActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAnnuler;
     private javax.swing.JButton btnEnregistrer;
     private javax.swing.JButton btnModifier;
     private javax.swing.JButton btnSupprimer;
+    private javax.swing.JButton btnrechercher;
     private javax.swing.JComboBox<String> cbType;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
@@ -553,7 +625,6 @@ private void chargerDonneesLivres() {
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
-    private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
