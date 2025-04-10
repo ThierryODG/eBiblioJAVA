@@ -276,6 +276,15 @@ private formstatistique formStatistique;
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         // TODO add your handling code here:
+        int confirm = JOptionPane.showConfirmDialog(
+        this, 
+        "Voulez-vous vraiment quitter ?", 
+        "Confirmation", 
+        JOptionPane.YES_NO_OPTION);
+    
+    if (confirm == JOptionPane.YES_OPTION) {
+        this.dispose(); // ou System.exit(0)
+    }
         
     }//GEN-LAST:event_jButton2ActionPerformed
 
