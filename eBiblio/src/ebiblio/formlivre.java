@@ -12,7 +12,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
-
+import javax.swing.table.JTableHeader;
+import javax.swing.table.TableRowSorter;
 /**
  *
  * @author THIERRY
@@ -29,27 +30,48 @@ public class formlivre extends javax.swing.JInternalFrame {
     
     // Chargement des données au démarrage
     chargerDonneesLivres();
+    // Ajoutez ceci dans votre constructeur après l'initialisation des composants
+tabLivre.getSelectionModel().addListSelectionListener(e -> {
+    if (!e.getValueIsAdjusting()) {
+        int selectedRow = tabLivre.getSelectedRow();
+        if (selectedRow >= 0) {
+            // Remplir les champs avec les données de la ligne sélectionnée
+            txtTitre.setText(tabLivre.getValueAt(selectedRow, 1).toString());
+            txtAuteur.setText(tabLivre.getValueAt(selectedRow, 2).toString());
+            cbType.setSelectedItem(tabLivre.getValueAt(selectedRow, 3).toString());
+            txtISBN.setText(tabLivre.getValueAt(selectedRow, 4).toString());
+            txtExemple.setText(tabLivre.getValueAt(selectedRow, 5).toString());
+        }
+    }
+});
     }
     
     
     
     
     private void initTableModel() {
-    // Création du modèle avec les colonnes correspondant à votre BDD
+    // Création du modèle avec les colonnes
     DefaultTableModel model = new DefaultTableModel(
         new Object[]{"ID", "Titre", "Auteur", "Type", "ISBN", "Ex. totaux", "Ex. dispo"}, 0) {
         @Override
         public boolean isCellEditable(int row, int column) {
-            return false; // Rend toutes les cellules non éditables
+            return false; // Toutes les cellules non éditables
+        }
+        
+        @Override
+        public Class<?> getColumnClass(int column) {
+            // Important pour le tri correct des colonnes
+            switch (column) {
+                case 0: case 5: case 6: return Integer.class; // Colonnes numériques
+                default: return String.class;
+            }
         }
     };
+    
     tabLivre.setModel(model);
     
-    // Configuration de la largeur des colonnes
-    tabLivre.getColumnModel().getColumn(0).setPreferredWidth(50);  // ID
-    tabLivre.getColumnModel().getColumn(1).setPreferredWidth(200); // Titre
-    tabLivre.getColumnModel().getColumn(2).setPreferredWidth(150); // Auteur
-    // ... autres configurations
+    // Active le tri sur les en-têtes
+    tabLivre.setAutoCreateRowSorter(true);
 }
 
 private void chargerDonneesLivres() {
@@ -109,9 +131,9 @@ private void chargerDonneesLivres() {
         txtISBN = new javax.swing.JTextField();
         txtExemple = new javax.swing.JTextField();
         txtRecherher = new javax.swing.JTextField();
-        jLabel7 = new javax.swing.JLabel();
         jLabel8 = new javax.swing.JLabel();
         cbType = new javax.swing.JComboBox<>();
+        btnrechercher = new javax.swing.JButton();
 
         setBackground(new java.awt.Color(255, 255, 255));
         setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
@@ -127,8 +149,14 @@ private void chargerDonneesLivres() {
 
         btnAnnuler.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         btnAnnuler.setText("Annuler");
+        btnAnnuler.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnAnnulerActionPerformed(evt);
+            }
+        });
 
         btnSupprimer.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        btnSupprimer.setForeground(new java.awt.Color(255, 51, 51));
         btnSupprimer.setText("Supprimer");
         btnSupprimer.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -145,6 +173,7 @@ private void chargerDonneesLivres() {
         });
 
         btnEnregistrer.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        btnEnregistrer.setForeground(new java.awt.Color(0, 153, 51));
         btnEnregistrer.setText("Enregistrer");
         btnEnregistrer.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -176,6 +205,11 @@ private void chargerDonneesLivres() {
                 return canEdit [columnIndex];
             }
         });
+        tabLivre.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tabLivreMouseClicked(evt);
+            }
+        });
         jScrollPane2.setViewportView(tabLivre);
 
         jLabel2.setFont(new java.awt.Font("Segoe UI", 0, 20)); // NOI18N
@@ -205,10 +239,6 @@ private void chargerDonneesLivres() {
             }
         });
 
-        jLabel7.setFont(new java.awt.Font("Segoe UI", 0, 20)); // NOI18N
-        jLabel7.setIcon(new javax.swing.ImageIcon(getClass().getResource("/image/rechercher_32.png"))); // NOI18N
-        jLabel7.setText("rechercher");
-
         jLabel8.setFont(new java.awt.Font("Segoe UI", 0, 36)); // NOI18N
         jLabel8.setIcon(new javax.swing.ImageIcon(getClass().getResource("/image/fond_bibliothèque.jpg"))); // NOI18N
 
@@ -217,6 +247,14 @@ private void chargerDonneesLivres() {
         cbType.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 cbTypeActionPerformed(evt);
+            }
+        });
+
+        btnrechercher.setIcon(new javax.swing.ImageIcon(getClass().getResource("/image/rechercher_32.png"))); // NOI18N
+        btnrechercher.setText("rechercher");
+        btnrechercher.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnrechercherActionPerformed(evt);
             }
         });
 
@@ -249,19 +287,16 @@ private void chargerDonneesLivres() {
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel2Layout.createSequentialGroup()
                                 .addGap(100, 100, 100)
-                                .addComponent(txtRecherher, javax.swing.GroupLayout.PREFERRED_SIZE, 316, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(jLabel7))
+                                .addComponent(txtRecherher, javax.swing.GroupLayout.PREFERRED_SIZE, 316, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jLabel8)
-                                .addGap(73, 73, 73))))
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                            .addComponent(txtAuteur, javax.swing.GroupLayout.PREFERRED_SIZE, 466, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(txtTitre, javax.swing.GroupLayout.PREFERRED_SIZE, 466, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(25, 25, 25)))
-                .addContainerGap(47, Short.MAX_VALUE))
+                                .addComponent(jLabel8)))
+                        .addGap(32, 32, 32)
+                        .addComponent(btnrechercher))
+                    .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                        .addComponent(txtAuteur, javax.swing.GroupLayout.PREFERRED_SIZE, 466, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(txtTitre, javax.swing.GroupLayout.PREFERRED_SIZE, 466, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(68, Short.MAX_VALUE))
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addComponent(jScrollPane2)
                 .addContainerGap())
@@ -295,7 +330,7 @@ private void chargerDonneesLivres() {
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                 .addComponent(txtRecherher, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(jLabel7))
+                                .addComponent(btnrechercher))
                             .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                 .addComponent(btnSupprimer)
                                 .addComponent(btnEnregistrer)
@@ -435,6 +470,117 @@ private void chargerDonneesLivres() {
     
     private void btnModifierActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnModifierActionPerformed
         // TODO add your handling code here:
+        // 1. Vérifier qu'une ligne est sélectionnée
+    int selectedRow = tabLivre.getSelectedRow();
+    if (selectedRow == -1) {
+        JOptionPane.showMessageDialog(this, 
+            "Veuillez sélectionner un livre à modifier", 
+            "Aucune sélection", 
+            JOptionPane.WARNING_MESSAGE);
+        return;
+    }
+
+    // 2. Récupérer l'ID du livre sélectionné (colonne 0)
+    int livreId = (int) tabLivre.getValueAt(selectedRow, 0);
+
+    // 3. Récupérer les nouvelles valeurs depuis les champs texte
+    String nouveauTitre = txtTitre.getText().trim();
+    String nouvelAuteur = txtAuteur.getText().trim();
+    String nouveauType = (String) cbType.getSelectedItem();
+    String nouvelISBN = txtISBN.getText().trim();
+    String nouveauxExemplaires = txtExemple.getText().trim();
+
+    // 4. Validation des champs
+    if (nouveauTitre.isEmpty() || nouvelAuteur.isEmpty() || nouvelISBN.isEmpty() || nouveauxExemplaires.isEmpty()) {
+        JOptionPane.showMessageDialog(this, 
+            "Tous les champs sont obligatoires", 
+            "Champs manquants", 
+            JOptionPane.WARNING_MESSAGE);
+        return;
+    }
+
+    try {
+        // 5. Conversion du nombre d'exemplaires
+        int exemplaires = Integer.parseInt(nouveauxExemplaires);
+        if (exemplaires <= 0) {
+            JOptionPane.showMessageDialog(this, 
+                "Le nombre d'exemplaires doit être supérieur à 0", 
+                "Valeur incorrecte", 
+                JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        // 6. Connexion à la BDD
+        Connection con = connexionbd.seConnecter();
+
+        // 7. Vérification que l'ISBN n'existe pas déjà pour un autre livre
+        String checkISBN = "SELECT id FROM livres WHERE isbn = ? AND id != ?";
+        PreparedStatement psCheck = con.prepareStatement(checkISBN);
+        psCheck.setString(1, nouvelISBN);
+        psCheck.setInt(2, livreId);
+        ResultSet rs = psCheck.executeQuery();
+
+        if (rs.next()) {
+            JOptionPane.showMessageDialog(this, 
+                "Un autre livre utilise déjà cet ISBN", 
+                "ISBN existant", 
+                JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        // 8. Mise à jour dans la base de données
+        String sql = "UPDATE livres SET " +
+                     "titre = ?, " +
+                     "auteur = ?, " +
+                     "type = ?, " +
+                     "isbn = ?, " +
+                     "exemplaires_totaux = ?, " +
+                     "exemplaires_disponibles = exemplaires_disponibles + (? - exemplaires_totaux) " +
+                     "WHERE id = ?";
+
+        PreparedStatement ps = con.prepareStatement(sql);
+        ps.setString(1, nouveauTitre);
+        ps.setString(2, nouvelAuteur);
+        ps.setString(3, nouveauType);
+        ps.setString(4, nouvelISBN);
+        ps.setInt(5, exemplaires);
+        ps.setInt(6, exemplaires);
+        ps.setInt(7, livreId);
+
+        int rowsUpdated = ps.executeUpdate();
+
+        if (rowsUpdated > 0) {
+            JOptionPane.showMessageDialog(this, 
+                "Livre modifié avec succès", 
+                "Succès", 
+                JOptionPane.INFORMATION_MESSAGE);
+            
+            // 9. Rafraîchir les données du tableau
+            chargerDonneesLivres();
+            
+            // 10. Vider les champs
+            txtTitre.setText("");
+            txtAuteur.setText("");
+            cbType.setSelectedIndex(0);
+            txtISBN.setText("");
+            txtExemple.setText("");
+        }
+
+        // 11. Fermer les ressources
+        ps.close();
+        con.close();
+
+    } catch (NumberFormatException e) {
+        JOptionPane.showMessageDialog(this, 
+            "Le nombre d'exemplaires doit être un nombre valide", 
+            "Format incorrect", 
+            JOptionPane.ERROR_MESSAGE);
+    } catch (SQLException | ClassNotFoundException e) {
+        JOptionPane.showMessageDialog(this, 
+            "Erreur lors de la modification: " + e.getMessage(), 
+            "Erreur BDD", 
+            JOptionPane.ERROR_MESSAGE);
+    }
     }//GEN-LAST:event_btnModifierActionPerformed
 
     private void btnEnregistrerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEnregistrerActionPerformed
@@ -540,12 +686,122 @@ private void chargerDonneesLivres() {
     }
     }//GEN-LAST:event_txtExempleKeyReleased
 
+    private void btnrechercherActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnrechercherActionPerformed
+        // TODO add your handling code here:                                            
+    String termeRecherche = txtRecherher.getText().trim();
+    
+    if (termeRecherche.isEmpty()) {
+        // Si le champ est vide, recharger tous les livres
+        chargerDonneesLivres();
+        return;
+    }
+    
+    try {
+        // Utilisation de votre modèle de table existant
+        DefaultTableModel model = (DefaultTableModel) tabLivre.getModel();
+        model.setRowCount(0); // Vide le tableau
+        
+        // Connexion avec votre méthode existante
+        Connection con = connexionbd.seConnecter();
+        
+        // Requête avec LIKE pour recherche partielle
+        String sql = "SELECT * FROM livres WHERE " +
+                     "titre LIKE ? OR " +
+                     "auteur LIKE ? OR " +
+                     "isbn LIKE ? OR " +
+                     "type LIKE ? " +
+                     "ORDER BY titre";
+        
+        PreparedStatement ps = con.prepareStatement(sql);
+        String termeLike = "%" + termeRecherche + "%";
+        ps.setString(1, termeLike);
+        ps.setString(2, termeLike);
+        ps.setString(3, termeLike);
+        ps.setString(4, termeLike);
+        
+        ResultSet rs = ps.executeQuery();
+        
+        // Remplissage du tableau comme dans votre méthode chargerDonneesLivres()
+        while (rs.next()) {
+            model.addRow(new Object[]{
+                rs.getInt("id"),
+                rs.getString("titre"),
+                rs.getString("auteur"),
+                rs.getString("type"),
+                rs.getString("isbn"),
+                rs.getInt("exemplaires_totaux"),
+                rs.getInt("exemplaires_disponibles")
+            });
+        }
+        
+        // Feedback si aucun résultat
+        if (model.getRowCount() == 0) {
+            JOptionPane.showMessageDialog(this,
+                "Aucun livre trouvé pour : " + termeRecherche,
+                "Aucun résultat",
+                JOptionPane.INFORMATION_MESSAGE);
+        }
+        
+        // Fermeture des ressources
+        rs.close();
+        ps.close();
+        con.close();
+        
+    } catch (SQLException | ClassNotFoundException e) {
+        JOptionPane.showMessageDialog(this,
+            "Erreur lors de la recherche : " + e.getMessage(),
+            "Erreur",
+            JOptionPane.ERROR_MESSAGE);
+    }
+
+    }//GEN-LAST:event_btnrechercherActionPerformed
+
+    private void btnAnnulerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAnnulerActionPerformed
+        // TODO add your handling code here:                                          
+    // 1. Vider tous les champs de saisie
+    txtTitre.setText("");
+    txtAuteur.setText("");
+    cbType.setSelectedIndex(0); // Remet à la première option du ComboBox
+    txtISBN.setText("");
+    txtExemple.setText("");
+    txtRecherher.setText("");
+    
+    // 2. Désélectionner la ligne dans le tableau
+    tabLivre.clearSelection();
+    
+    chargerDonneesLivres(); // Recharge tous les livres depuis la BDD
+
+    }//GEN-LAST:event_btnAnnulerActionPerformed
+
+    private void tabLivreMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tabLivreMouseClicked
+        // TODO add your handling code here:                                      
+    // Ne rien faire si ce n'est pas un clic sur l'en-tête
+    if (evt.getSource() instanceof JTableHeader) {
+        JTableHeader header = (JTableHeader)evt.getSource();
+        int column = header.columnAtPoint(evt.getPoint());
+        
+        // Obtenir le RowSorter existant ou en créer un nouveau
+        TableRowSorter<DefaultTableModel> sorter;
+        if (tabLivre.getRowSorter() == null) {
+            sorter = new TableRowSorter<>((DefaultTableModel)tabLivre.getModel());
+            tabLivre.setRowSorter(sorter);
+        } else {
+            sorter = (TableRowSorter<DefaultTableModel>)tabLivre.getRowSorter();
+        }
+        
+        // Trier par la colonne cliquée
+        sorter.toggleSortOrder(column);
+    }
+
+    }//GEN-LAST:event_tabLivreMouseClicked
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAnnuler;
     private javax.swing.JButton btnEnregistrer;
     private javax.swing.JButton btnModifier;
     private javax.swing.JButton btnSupprimer;
+    private javax.swing.JButton btnrechercher;
     private javax.swing.JComboBox<String> cbType;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
@@ -553,7 +809,6 @@ private void chargerDonneesLivres() {
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
-    private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
